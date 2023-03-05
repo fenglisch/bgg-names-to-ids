@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script defer src="index.js"></script>
+    <style>
+      #start-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+      }
+      #tile-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        justify-items: center;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .tile {
+        text-align: center;
+      }
+
+      .tile img {
+        max-width: 170px;
+        cursor: pointer;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #final-id-list {
+        color: green;
+      }
+
+      #no-matches {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="start-section">
+      <h3>
+        Please provide a comma-separated list of game names by uploading a file
+        or pasting in the textarea.
+      </h3>
+      <input type="file" />
+      <textarea cols="30" rows="10"></textarea>
+      <button id="start">Start</button>
+    </div>
+    <h3 id="heading-choose-game" class="hidden">
+      There has been no clear match for "<span
+        id="search-term-in-heading"
+      ></span
+      >". Please choose the right game by clicking on the thumbnail.
+    </h3>
+    <div id="complete" class="hidden">
+      <h3>Proccessing completed.</h3>
+      <p>Your ID list: <code id="final-id-list"></code></p>
+      <div id="section-no-matches" class="hidden">
+        <p>
+          There have been no matches for the following games: <br />
+          <code id="no-matches"></code>
+        </p>
+        <p>
+          Please search for these games manually or fix spelling mistakes and
+          try it again.
+        </p>
+      </div>
+      <p>Refresh the page to process another list of games.</p>
+    </div>
+    <div id="tile-container"></div>
+  </body>
+</html>
