@@ -5,40 +5,57 @@ let arSkippedGames = [];
 const BASE_URL = "https://boardgamegeek.com/xmlapi2/";
 const sectionInput = document.querySelector("#input");
 const sectionProcessing = document.querySelector("#processing");
-const errorMessage = document.querySelector("#error-message");
+const modalTooManyRequests = document.querySelector("#modal-background");
+const countdown = document.querySelector("#countdown-till-retry");
 const sectionResults = document.querySelector("#results");
 const tileContainer = document.querySelector("#tile-container");
 const headingChooseGame = document.querySelector("#heading-choose-game");
 let i = 0;
 
-function makeRequestXML(url) {
-  errorMessage.textContent = "";
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", url, false);
-  let result = "";
-  xhr.onload = () => {
-    if (xhr.status === 200) result = xhr.responseXML;
-    else if (xhr.status === 429) {
-      errorMessage.textContent =
-        "Status report: The API of BoardGameGeek is receiving too many requests. Wait 20 seconds until automatic retry.";
-      setTimeout(() => {
-        result = makeRequestXML(url);
-      }, 20000);
-    } else {
-      errorMessage.innerHTML =
-        "Error: Access to the BoardGameGeek API failed (you can check check the console and network tab for details)<br><strong>Click the button 'Skip to final results'</strong> to save your progress.";
-      result = "error";
+document.querySelectorAll(".skip-to-end").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    arSkippedGames = arUniqueNamesFromInput.slice(i);
+    announceResults();
+  });
+});
+
+async function fetchData(url) {
+  modalTooManyRequests.classList.add("hidden");
+  try {
+    const response = await fetch(url);
+    const responseText = await response.text();
+    const parser = new DOMParser();
+    return parser.parseFromString(responseText, "text/xml");
+  } catch (error) {
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      modalTooManyRequests.classList.remove("hidden");
+      startTimer(30, countdown);
+      await new Promise((resolve) => setTimeout(resolve, 30000));
+      return await fetchData(url);
     }
-  };
-  xhr.send();
-  return result;
+    console.error(`fetchData failed. ${error}`);
+    throw error;
+  }
 }
 
+function startTimer(duration, display) {
+  const intervalId = setInterval(() => {
+    let minutes = parseInt(duration / 60, 10);
+    let seconds = parseInt(duration % 60, 10);
+
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+    display.textContent = `${minutes}:${seconds}`;
+    --duration;
+    if (duration < 0) clearInterval(intervalId);
+  }, 1000);
+}
 document.querySelector("#start").addEventListener("click", () => {
   const inputFromTextarea = document.querySelector("textarea").value;
 
   //   const uploadedFile = document.querySelector("input[type='file'");
-  arAllNamesFromInput = inputFromTextarea
+  const arAllNamesFromInput = inputFromTextarea
     .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g) // Split at Commas which are not between quotes (see https://stackoverflow.com/a/53774647)
     .map(
       (name) =>
@@ -50,15 +67,12 @@ document.querySelector("#start").addEventListener("click", () => {
     );
   // Remove duplicates and empty strings
   arAllNamesFromInput.forEach((name) => {
-    if (!arUniqueNamesFromInput.includes(name) && name)
+    if (!arUniqueNamesFromInput.includes(name) && name) {
       arUniqueNamesFromInput.push(name);
+    }
   });
   sectionInput.classList.add("hidden");
   sectionProcessing.classList.remove("hidden");
-  document.querySelector("#skip-to-end").addEventListener("click", () => {
-    arSkippedGames = arUniqueNamesFromInput.slice(i);
-    announceResults();
-  });
   arUniqueNamesFromInput.forEach((name) => {
     const rowInProgressSidebar = document.createElement("tr");
     rowInProgressSidebar.innerHTML = `<td class="name">${name}</td><td class="status"></td>`;
@@ -68,14 +82,14 @@ document.querySelector("#start").addEventListener("click", () => {
   processNextGame();
 });
 
-function processNextGame() {
+async function processNextGame() {
   if (i === arUniqueNamesFromInput.length) {
     announceResults();
     return;
   }
   const searchTerm = arUniqueNamesFromInput[i];
   const arMatchesIds = [];
-  const xmlSearchResult = makeRequestXML(
+  const xmlSearchResult = await fetchData(
     `${BASE_URL}search?query=${searchTerm}&type=boardgame`
   );
 
@@ -103,24 +117,24 @@ function processNextGame() {
   if (arMatchesIds.length === 0) {
     const arIds = Array.from(arSearchResultItems).map((result) => result.id);
     askForClarification(arIds, searchTerm);
-    return;
   } else if (arMatchesIds.length === 1) {
     processResult(arMatchesIds[0], searchTerm);
-    return;
   } else {
     askForClarification(arMatchesIds, searchTerm);
-    return;
   }
 }
 
-function askForClarification(arIds, searchTerm) {
-  if (arIds.length > 100) {
+async function askForClarification(arIds, searchTerm) {
+  if (arIds.length > 75) {
     processResult(null, searchTerm, "Too many search results");
     return;
   }
-  const arNodesSearchResults = makeRequestXML(
+  const xmlSearchResults = await fetchData(
     `${BASE_URL}thing?id=${arIds.join(",")}&type=boardgame`
-  ).querySelectorAll("item[type='boardgame']");
+  );
+  const arNodesSearchResults = xmlSearchResults.querySelectorAll(
+    "item[type='boardgame']"
+  );
 
   if (arNodesSearchResults.length === 0) {
     processResult(null, searchTerm, "No search results");
@@ -151,7 +165,7 @@ function askForClarification(arIds, searchTerm) {
           <p><strong>${primaryName}</strong> (${year},&nbsp;${link})</p>\
             ${
               arAlternateNames.length > 0
-                ? "<p>(" + arAlternateNames.join(", ") + ")</p>"
+                ? `<p>(${arAlternateNames.join(", ")})</p>`
                 : ""
             }
           `;
@@ -159,7 +173,6 @@ function askForClarification(arIds, searchTerm) {
       headingChooseGame.classList.add("hidden");
       tileContainer.innerHTML = "";
       processResult(e.target.getAttribute("data-game-id"), searchTerm);
-      return;
     });
     tileContainer.appendChild(tile);
   });
@@ -177,7 +190,6 @@ function askForClarification(arIds, searchTerm) {
       searchTerm,
       "Search results didn't include the right game"
     );
-    return;
   });
   tileContainer.insertBefore(
     btnChooseNone,
@@ -192,7 +204,7 @@ function processResult(id, searchTerm, status = `ID: ${id}`) {
   statusInTable.textContent += status;
   statusInTable.style.color = id ? "green" : "red";
   ++i;
-  setTimeout(processNextGame, 0);
+  setTimeout(processNextGame, 750);
 }
 
 function announceResults() {

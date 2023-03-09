@@ -16,36 +16,39 @@
 
       #processing {
         display: grid;
-        grid-template-columns: 1fr 4fr;
-        gap: 40px;
-        padding: 30px;
-      }
-
-      #sidebar {
-        border-right: 2px solid black;
-        padding-right: 20px;
+        grid-template-columns: 1fr 3fr;
+        gap: 20px;
+        padding: 0 30px;
       }
 
       h3 {
         text-align: center;
       }
 
-      #skip-to-end {
+      #sidebar .skip-to-end {
         margin: 20px auto;
         display: block;
       }
 
+      #container-progress-table {
+        max-height: calc(100vh - 75px);
+        overflow-y: scroll;
+      }
+
       #progress-table {
         border-collapse: collapse;
-        max-height: 100vh;
-        display: block;
-        overflow-y: scroll;
+        width: 100%;
       }
 
       td,
       th {
         border: 1px solid grey;
         padding: 5px;
+        width: 50%;
+        min-width: 100px;
+        max-width: 150px;
+        width: min-content;
+        overflow: hidden;
       }
 
       #tile-container {
@@ -63,6 +66,24 @@
       .tile img {
         max-width: 150px;
         cursor: pointer;
+      }
+
+      #modal-background {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        background: #00000099;
+        align-items: center;
+      }
+
+      #modal-too-many-requests {
+        background: #fff;
+        padding: 10px 40px;
+        border-radius: 5px;
       }
 
       .hidden {
@@ -101,17 +122,38 @@
     </section>
     <section id="processing" class="hidden">
       <div id="sidebar">
-        <h3>Progress</h3>
-        <button id="skip-to-end">Skip to final results</button>
-        <table id="progress-table">
-          <tr>
-            <th scope="column">Name</th>
-            <th scope="column">Status</th>
-          </tr>
-        </table>
+        <button class="skip-to-end">Skip to final results</button>
+        <div id="container-progress-table">
+          <table id="progress-table">
+            <thead>
+              <tr>
+                <th colspan="2">Progress</th>
+              </tr>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
       </div>
       <div id="ask-for-clarification">
-        <p id="error-message"></p>
+        <div id="modal-background" class="hidden">
+          <div id="modal-too-many-requests">
+            <p>
+              The BoardGameGeek API is getting too many requests. Sit back and
+              wait a little bit.
+            </p>
+            <p>Automatic retry in: <span id="countdown-till-retry"></span></p>
+            <p>
+              Or:
+              <button class="skip-to-end">
+                Skip to results to store current progress
+              </button>
+            </p>
+          </div>
+        </div>
+        <h3 id="heading-processing">Processing your list...</h3>
         <h3 id="heading-choose-game" class="hidden">
           There has been no clear match for "<span
             id="search-term-in-heading"
@@ -128,11 +170,12 @@
       </p>
       <p id="paragraph-no-matches" class="hidden">
         There have been no matches for the following games (please search for
-        these games manually or fix spelling mistakes and try it again.): <br />
+        these games manually or fix spelling mistakes and try again): <br />
         <code id="no-matches"></code>
       </p>
       <p id="paragraph-skipped" class="hidden">
-        You skipped the following games: <code id="skipped"></code>
+        You skipped the following games from your list:
+        <code id="skipped"></code>
       </p>
       <button onclick="location.reload()" id="restart">Restart</button>
     </section>
