@@ -1,25 +1,14 @@
 const arUniqueNamesFromInput = [];
-
 const arIdsForOutput = [];
-
 const arNoMatches = [];
-
 let arSkippedGames = [];
-
 const BASE_URL = "https://boardgamegeek.com/xmlapi2/";
-
 const sectionInput = document.querySelector("#input");
-
 const sectionProcessing = document.querySelector("#processing");
-
 const errorMessage = document.querySelector("#error-message");
-
 const sectionResults = document.querySelector("#results");
-
 const tileContainer = document.querySelector("#tile-container");
-
 const headingChooseGame = document.querySelector("#heading-choose-game");
-
 let i = 0;
 
 function makeRequestXML(url) {
