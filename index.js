@@ -249,7 +249,7 @@ async function askForClarification(arIds, searchTerm) {
         listOfMatchingAlternateNames = arMatchingAlternateNames
           .map((name) => name.replace(/^|$/g, "&quot;"))
           .join(", ")
-          .replace(/^/, "<span class='alternate-names'>(Also: ")
+          .replace(/^/, "<span class='alternate-names'>(")
           .replace(/$/, ")<s/span>");
       }
     }
