@@ -8,7 +8,7 @@ Just download the `bgg-names-to-ids.html`, save it on your local computer and th
 
 ## How it works
 
-This website sends the names you provide as search queries to the BGG database (via their [XML API](https://boardgamegeek.com/wiki/page/BGG_XML_API2)). When their is no unique match, the website will ask you for clarification.
+This website sends the names you provide as search queries to the BGG database (via their [XML API](https://boardgamegeek.com/wiki/page/BGG_XML_API2)). When there is no unique match, the website will ask you for clarification.
 
 ## Know issues
 
