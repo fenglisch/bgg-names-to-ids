@@ -51,15 +51,15 @@
         align-items: center;
       }
 
-      #input-explanation {
+      #sidebar-explanation {
         padding: 10px 30px;
       }
 
-      #input-explanation h4 {
+      #sidebar-explanation h4 {
         margin-bottom: 10px;
       }
 
-      #input-explanation p {
+      #sidebar-explanation p {
         font-size: 0.9rem;
         margin-top: 0;
       }
@@ -235,14 +235,16 @@
   </head>
   <body>
     <div id="sidebar">
-      <div id="input-explanation" class="visible-at-input">
+      <div id="sidebar-explanation" class="visible-at-input">
         <h4>Purpose of this website</h4>
         <p>
           This website helps you to identify the
           <a href="https://boardgamegeek.com/" target="_blank">BoardGameGeek</a>
           (BGG) ID's of your boardgames. With your ID list, you can then bulk
           upload your games into your BGG Collection using
-          <a href="#">this program</a>.
+          <a href="https://github.com/fenglisch/bgg-bulk-upload" target="_blank"
+            >this program</a
+          >.
         </p>
         <h4>How it works</h4>
         <p>
@@ -272,7 +274,18 @@
         </table>
         <button class="skip-to-end">Skip to final results</button>
       </div>
-      <div class="visible-at-results"></div>
+      <div id="sidebar-explanation" class="visible-at-results">
+        <h4>Great! And what now?</h4>
+        <p>
+          With your ID list, you can now bulk upload your boardgames to your
+          BoardGameGeek Collection. This feature is missing on BGG itself, but
+          you can use
+          <a href="https://github.com/fenglisch/bgg-bulk-upload" target="_blank"
+            >this program</a
+          >
+          to get the job done.
+        </p>
+      </div>
     </div>
     <div id="header">
       <h1>Bulk Convert Boardgame Names to BoardGameGeek ID's</h1>

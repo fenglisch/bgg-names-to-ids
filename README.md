@@ -1,6 +1,6 @@
 # Identify the BoardGameGeek ID's of your boardgames
 
-This website helps you to identify the [BoardGameGeek](https://boardgamegeek.com/) (BGG) ID's of your boardgames. With your ID list, you can then bulk upload your games into your BGG Collection using [this program](#).
+This website helps you to identify the [BoardGameGeek](https://boardgamegeek.com/) (BGG) ID's of your boardgames. With your ID list, you can then bulk upload your games into your BGG Collection using [this program](https://github.com/fenglisch/bgg-bulk-upload).
 
 ## How to setup
 
