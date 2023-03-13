@@ -291,8 +291,9 @@
       <h1>Bulk Convert Boardgame Names to BoardGameGeek ID's</h1>
     </div>
     <div id="main">
-      <div id="input-container" class="visible-at-input">
+      <form id="input-container" class="visible-at-input">
         <textarea
+          required
           placeholder="Paste a semicolon-separated list with the names of your games."
         ></textarea>
         <div>
@@ -301,8 +302,8 @@
             >Also search for Boardgame Expansions?</label
           >
         </div>
-        <button type="submit" id="start">Start</button>
-      </div>
+        <button id="start">Start</button>
+      </form>
       <div id="processing-container" class="visible-at-processing hidden">
         <div id="modal-background" class="hidden">
           <div id="modal-too-many-requests">
@@ -422,7 +423,9 @@
         }, 1000);
       }
 
-      document.querySelector("#start").addEventListener("click", () => {
+      // document.querySelector("#start").addEventListener("click", (e) => {
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
         hideOldAndShowNextSection("input", "processing");
         isIncludeExpansions =
           document.querySelector("#includeExpansions").checked;
